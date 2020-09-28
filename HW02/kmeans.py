@@ -31,7 +31,10 @@ class KMeans(object):
                 dist: N x M array, where dist2[i, j] is the euclidean distance between 
                 x[i, :] and y[j, :]
                 """
-        raise NotImplementedError
+        N, D = np.shape(x)
+        reshaped_x = np.reshape(x, (N, 1, D))
+        euclidean = np.sqrt(np.sum(np.square(reshaped_x - y), axis=2))
+        return euclidean
 
     def _init_centers(self, points, K, **kwargs):  # [5 pts]
         """

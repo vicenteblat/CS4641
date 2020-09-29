@@ -43,9 +43,12 @@ class KMeans(object):
             K: number of clusters
             kwargs: any additional arguments you want
         Return:
-            centers: K x D numpy array, the centers. 
+            centers: K x D numpy array, the centers.
         """
-        raise NotImplementedError
+        _, D = np.shape(points)
+        options = points.flatten()
+        centersArray = np.random.choice(options, (K, D))
+        return centersArray
 
     def _update_assignment(self, centers, points):  # [10 pts]
         """

@@ -90,7 +90,15 @@ class KMeans(object):
         Return:
             loss: a single float number, which is the objective function of KMeans. 
         """
-        raise NotImplementedError
+        K, _ = np.shape(centers)
+        loss = 0.0
+        for k in range(K):
+            idxes = np.where(cluster_idx == k)[0]
+            if idxes.size > 0:
+                members = points[idxes]
+                center = centers[k]
+                loss += np.sum(np.square(members - center))
+        return loss
 
     def __call__(self, points, K, max_iters=100, abs_tol=1e-16, rel_tol=1e-16, verbose=False, **kwargs):
         """

@@ -73,7 +73,13 @@ class KMeans(object):
         Return:
             centers: new centers, K x D numpy array, where K is the number of clusters, and D is the dimension.
         """
-        raise NotImplementedError
+        K, _ = np.shape(old_centers)
+        centers = np.copy(old_centers)
+        for k in range(K):
+            idxes = np.where(cluster_idx == k)[0]
+            if idxes.size > 0:
+                centers[k,:] = np.mean(points[idxes], axis=0)
+        return centers
 
     def _get_loss(self, centers, cluster_idx, points):  # [5 pts]
         """

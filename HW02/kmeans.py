@@ -60,7 +60,9 @@ class KMeans(object):
 
         Hint: You could call pairwise_dist() function.
         """
-        raise NotImplementedError
+        distanceArray = self.pairwise_dist(points, centers)
+        cluster_idx = np.argmin(distanceArray, axis=1)
+        return cluster_idx
 
     def _update_centers(self, old_centers, cluster_idx, points):  # [10 pts]
         """

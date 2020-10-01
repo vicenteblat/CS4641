@@ -11,6 +11,7 @@ from mpl_toolkits.mplot3d import axes3d
 from tqdm import tqdm
 # Load image
 import imageio
+import math
 
 
 # Set random seed so output is all same
@@ -139,8 +140,14 @@ class KMeans(object):
         Return:
             None (plot loss values against number of clusters)
         """
-
-        raise NotImplementedError
+        x_values = []
+        y_values = []
+        for k in range(1, max_K + 1):
+            x_values.append(k)
+            _, _, loss = self.__call__(data, k)
+            y_values.append(loss)
+        plt.plot(x_values, y_values)
+        return np.array(y_values)
 
 
 def intra_cluster_dist(cluster_idx, data, labels):  # [4 pts]
@@ -155,7 +162,13 @@ def intra_cluster_dist(cluster_idx, data, labels):  # [4 pts]
         intra_dist_cluster: 1D array where the i_th entry denotes the average distance from point i 
                             in cluster denoted by cluster_idx to other points within the same cluster
     """
-    raise NotImplementedError
+    members_idxes = np.where(labels == cluster_idx)
+    members = data[members_idxes]
+    n, d = np.shape(members)
+    reshaped_members = np.reshape(members, (n, 1, d))
+    intra_dist = np.sqrt(np.sum(np.square(reshaped_members - members), axis=2))
+    intra_dist_cluster = np.sum(intra_dist, axis=0) / (n - 1)
+    return intra_dist_cluster
 
 
 def inter_cluster_dist(cluster_idx, data, labels):  # [4 pts]
@@ -169,7 +182,20 @@ def inter_cluster_dist(cluster_idx, data, labels):  # [4 pts]
         inter_dist_cluster: 1D array where the i-th entry denotes the average distance from point i in cluster
                             denoted by cluster_idx to the nearest neighboring cluster
     """
-    raise NotImplementedError
+    members_idxes = np.where(labels == cluster_idx)
+    members = data[members_idxes]
+    n, d = np.shape(members)
+    reshaped_members = np.reshape(members, (n, 1, d))
+    clusters = np.unique(labels)
+    clusters = np.delete(clusters, cluster_idx)
+    inter_dist_cluster = np.full(n, math.inf)
+    for cluster in clusters:
+        neigh_idxes = np.where(labels == cluster)
+        neigh = data[neigh_idxes]
+        inter_dist = np.sqrt(np.sum(np.square(reshaped_members - neigh), axis=2))
+        inter_dist_cluster_holder = np.mean(inter_dist, axis=1)
+        inter_dist_cluster = np.minimum(inter_dist_cluster_holder, inter_dist_cluster)
+    return inter_dist_cluster
 
 
 def silhouette_coefficient(data, labels):  # [2 pts]
@@ -182,4 +208,13 @@ def silhouette_coefficient(data, labels):  # [2 pts]
     Return:
         silhouette_coefficient: Silhouette coefficient of the current cluster assignment
     """
-    raise NotImplementedError
+    s_clusters = np.unique(labels)
+    N, _ = np.shape(data)
+    sum = 0.0
+    for s_cluster in s_clusters:
+        intra_dist = intra_cluster_dist(s_cluster, data, labels)
+        inter_dist = inter_cluster_dist(s_cluster, data, labels)
+        max_denominator = np.maximum(intra_dist, inter_dist)
+        coeff_array = (inter_dist - intra_dist) / max_denominator
+        sum += np.sum(coeff_array)
+    return sum / N

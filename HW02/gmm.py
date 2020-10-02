@@ -41,7 +41,13 @@ class GMM(object):
         Return:
             prob: N x D numpy array. See the above function.
         """
-        raise NotImplementedError
+        max_logits = np.amax(logit, axis=1)
+        max_logits = np.reshape(max_logits, (max_logits.size, 1))
+        logit_norm = logit - max_logits
+        logit_exp = np.exp(logit_norm)
+        denominator = np.sum(logit_exp, axis=1)
+        prob = logit_exp / np.reshape(denominator, (denominator.size, 1))
+        return prob
 
     def logsumexp(self, logit): # [5pts]
         """
@@ -50,7 +56,14 @@ class GMM(object):
         Return:
             s: N x 1 array where s[i,0] = logsumexp(logit[i,:]). See the above function
         """
-        raise NotImplementedError
+        max_logits = np.amax(logit, axis=1)
+        max_logits_r = np.reshape(max_logits, (max_logits.size, 1))
+        logit_norm = logit - max_logits_r
+        logit_exp = np.exp(logit_norm)
+        logit_sum = np.sum(logit_exp, axis=1)
+        s = np.log(logit_sum)
+        s = s + max_logits
+        return np.reshape(s, (s.size, 1))
 
     #for undergraduate student
     def normalPDF(self, logit, mu_i, sigma_i): #[5pts]
@@ -65,13 +78,18 @@ class GMM(object):
         Hint: 
             np.diagonal() should be handy.
         """
-        
-        raise NotImplementedError
+        N, D = np.shape(logit)
+        sigma_i = np.diagonal(sigma_i)
+        pdf = np.ones((1, N))
+        for i in range(D):
+            exponent = ((-2 * sigma_i[i])**-1) * np.square(logit[:, i] - mu_i[i])
+            pdf *= ((2 * np.pi * sigma_i[i])**-0.5) * np.exp(exponent)
+        return np.reshape(pdf, (N,))
     
     #for grad students
     def multinormalPDF(self, logits, mu_i, sigma_i):  #[5pts]
         """
-        Args: 
+        Args:
             logit: N x D numpy array
             mu_i: 1xD numpy array (or array of lenth D), the center for the ith gaussian.
             sigma_i: 1xDxD 3-D numpy array (or DxD 2-D numpy array), the covariance matrix of the ith gaussian.  

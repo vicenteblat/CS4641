@@ -112,7 +112,13 @@ class GMM(object):
             sigma: KxDxD numpy array, the diagonal standard deviation of each gaussian. 
                 You will have KxDxD numpy array for full covariance matrix case
         """
-        raise NotImplementedError
+        pi = np.ones((self.K,))
+        logit_shuffle = np.copy(self.points)
+        np.random.shuffle(logit_shuffle)
+        mu = logit_shuffle[:self.K, :]
+        sigma = np.identity(self.D)
+        sigma = np.stack([sigma]*self.K)
+        return pi, mu, sigma
 
     
     def _ll_joint(self, pi, mu, sigma, **kwargs): # [10 pts]

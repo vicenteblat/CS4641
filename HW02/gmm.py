@@ -170,8 +170,23 @@ class GMM(object):
         Hint:  
             There are formulas in the slide and in the above description box.
         """
-        
-        raise NotImplementedError
+        N, K = np.shape(gamma)
+        tau_max = np.argmax(gamma, axis=1)
+        pi = np.zeros(K)
+        mu = np.zeros((K, self.D))
+        sigma = np.zeros((K, self.D, self.D))
+        for k in range(K):
+            idxes = np.where(tau_max == k)
+            X = self.points[idxes, :]
+            tau_k = gamma[:, k]
+            N_k = np.sum(tau_k, axis=0)
+            mu_k = np.matmul(tau_k, self.points) / N_k
+            mu[k] = mu_k
+            pi_k = N_k / N
+            pi[k] = pi_k
+            sigma_k = np.diagonal(np.matmul(np.transpose(tau_k) * np.transpose(self.points - mu_k), (self.points - mu_k)) / N_k)
+            np.fill_diagonal(sigma[k], sigma_k)
+        return pi, mu, sigma
     
     
     def __call__(self, abs_tol=1e-16, rel_tol=1e-16, **kwargs): # No need to change

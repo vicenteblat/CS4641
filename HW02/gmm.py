@@ -79,7 +79,10 @@ class GMM(object):
             np.diagonal() should be handy.
         """
         N, D = np.shape(logit)
-        sigma_i = np.diagonal(sigma_i)
+        if len(np.shape(sigma_i)) == 2:
+            sigma_i = np.diagonal(sigma_i)
+        else:
+            sigma_i = np.diagonal(sigma_i[0])
         pdf = np.ones((1, N))
         for i in range(D):
             exponent = ((-2 * sigma_i[i])**-1) * np.square(logit[:, i] - mu_i[i])
@@ -132,8 +135,11 @@ class GMM(object):
         Return:
             ll(log-likelihood): NxK array, where ll(i, k) = log pi(k) + log NormalPDF(points_i | mu[k], sigma[k])
         """
-
-        raise NotImplementedError
+        log_likelihood = np.zeros((self.N, self.K))
+        for k in range(self.K):
+            pdf = self.normalPDF(self.points, mu[k], np.reshape(sigma[k], (1, self.D, self.D)))
+            log_likelihood[:, k] = np.log(pi[k] + 1e-32) + np.log(pdf + 1e-32)
+        return log_likelihood
 
     def _E_step(self, pi, mu, sigma, **kwargs): # [5pts]
         """
@@ -148,8 +154,8 @@ class GMM(object):
         Hint: 
             You should be able to do this with just a few lines of code by using _ll_joint() and softmax() defined above. 
         """
-        
-        raise NotImplementedError
+        ln_likelihood = self._ll_joint(pi, mu, sigma)
+        return self.softmax(ln_likelihood)
 
     def _M_step(self, gamma, **kwargs): # [10pts]
         """

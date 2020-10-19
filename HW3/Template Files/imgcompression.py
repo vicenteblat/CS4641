@@ -27,7 +27,8 @@ class ImgCompression(object):
             U_g, S_g, V_g = np.linalg.svd(X[:, :, 1])
             U_b, S_b, V_b = np.linalg.svd(X[:, :, 2])
             U = np.dstack((U_r, U_g, U_b))
-            S = np.dstack((S_r, S_g, S_b))
+            S = np.vstack((S_r, S_g, S_b))
+            S = S.transpose()
             V = np.dstack((V_r, V_g, V_b))
             return U, S, V
 

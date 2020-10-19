@@ -19,7 +19,17 @@ class ImgCompression(object):
             S: min(N, D) * 1 (* 3 for color images)
             V: D * D (* 3 for color images)
         """
-        raise NotImplementedError
+        if len(X.shape) == 2:
+            U, S, V = np.linalg.svd(X)
+            return U, S, V
+        else:
+            U_r, S_r, V_r = np.linalg.svd(X[:, :, 0])
+            U_g, S_g, V_g = np.linalg.svd(X[:, :, 1])
+            U_b, S_b, V_b = np.linalg.svd(X[:, :, 2])
+            U = np.dstack((U_r, U_g, U_b))
+            S = np.dstack((S_r, S_g, S_b))
+            V = np.dstack((V_r, V_g, V_b))
+            return U, S, V
 
 
     def rebuild_svd(self, U, S, V, k): # [5pts]
@@ -35,8 +45,19 @@ class ImgCompression(object):
 
         Hint: numpy.matmul may be helpful for reconstructing color images
         """
+        if len(U.shape) == 2:
+            U_k = U[:, :k]
+            S_k = S[:k]
+            S_k = np.reshape(S_k, (S_k.shape[0], 1))
+            V_k= V[:k, :]
+            print(U_k.shape)
+            print(S_k.shape)
+            print(V_k.shape)
+            Xrebuild = np.matmul(U_k, S_k, V_k)
+            return Xrebuild
+        else:
+            return None
 
-        raise NotImplementedError
 
     def compression_ratio(self, X, k): # [5pts]
         """

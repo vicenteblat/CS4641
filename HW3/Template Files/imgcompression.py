@@ -46,18 +46,18 @@ class ImgCompression(object):
         Hint: numpy.matmul may be helpful for reconstructing color images
         """
         if len(U.shape) == 2:
-            U_k = U[:, :k]
-            S_k = S[:k]
-            S_k = np.reshape(S_k, (S_k.shape[0], 1))
-            V_k= V[:k, :]
-            print(U_k.shape)
-            print(S_k.shape)
-            print(V_k.shape)
-            Xrebuild = np.matmul(U_k, S_k, V_k)
+            S_n = np.diag(S)[:k, :k]
+            U_n = U[:, :k]
+            V_n = V[:k, :]
+            U_S = np.matmul(U_n, S_n)
+            Xrebuild = np.matmul(U_S, V_n)
             return Xrebuild
         else:
-            return None
-
+            Xrebuild_r = ImgCompression.rebuild_svd(self, U[:, :, 0], S[:, 0], V[:, :, 0], k)
+            Xrebuild_g = ImgCompression.rebuild_svd(self, U[:, :, 1], S[:, 1], V[:, :, 1], k)
+            Xrebuild_b = ImgCompression.rebuild_svd(self, U[:, :, 2], S[:, 2], V[:, :, 2], k)
+            Xrebuild = np.dstack((Xrebuild_r, Xrebuild_g, Xrebuild_b))
+            return Xrebuild
 
     def compression_ratio(self, X, k): # [5pts]
         """

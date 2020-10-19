@@ -59,6 +59,7 @@ class ImgCompression(object):
             Xrebuild = np.dstack((Xrebuild_r, Xrebuild_g, Xrebuild_b))
             return Xrebuild
 
+
     def compression_ratio(self, X, k): # [5pts]
         """
         Compute compression of an image: (num stored values in original)/(num stored values in compressed)
@@ -68,7 +69,11 @@ class ImgCompression(object):
         Return:
             compression_ratio: float of proportion of storage used by compressed image
         """
-        raise NotImplementedError
+        original_size = X.shape[0] * X.shape[1]
+        compressed_size = k * (1 + X.shape[0] + X.shape[1])
+        compressed_ratio = compressed_size / original_size
+        return compressed_ratio
+
 
     def recovered_variance_proportion(self, S, k): # [5pts]
         """
@@ -80,4 +85,14 @@ class ImgCompression(object):
         Return:
            recovered_var: int (array of 3 ints for color image) corresponding to proportion of recovered variance
         """
-        raise NotImplementedError
+        # if len(S.shape) == 2:
+        #     original_var = np.trace(np.square(S))
+        #     S_k = np.diag(S)[:k, :k]
+        #     compressed_var = np.trace(np.square(S_k))
+        #     recovered_var = compressed_var / original_var
+        # else:
+        #     r = ImgCompression.recovered_variance_proportion(self, S[:, :, 0], k)
+        #     g = ImgCompression.recovered_variance_proportion(self, S[:, :, 1], k)
+        #     b = ImgCompression.recovered_variance_proportion(self, S[:, :, 2], k)
+        #     recovered_var = np.array([r, g, b])
+        #     return recovered_var

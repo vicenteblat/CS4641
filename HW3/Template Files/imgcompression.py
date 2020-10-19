@@ -85,14 +85,15 @@ class ImgCompression(object):
         Return:
            recovered_var: int (array of 3 ints for color image) corresponding to proportion of recovered variance
         """
-        # if len(S.shape) == 2:
-        #     original_var = np.trace(np.square(S))
-        #     S_k = np.diag(S)[:k, :k]
-        #     compressed_var = np.trace(np.square(S_k))
-        #     recovered_var = compressed_var / original_var
-        # else:
-        #     r = ImgCompression.recovered_variance_proportion(self, S[:, :, 0], k)
-        #     g = ImgCompression.recovered_variance_proportion(self, S[:, :, 1], k)
-        #     b = ImgCompression.recovered_variance_proportion(self, S[:, :, 2], k)
-        #     recovered_var = np.array([r, g, b])
-        #     return recovered_var
+        if len(S.shape) == 1:
+            original_var = np.sum(np.square(S))
+            S_k = S[:k]
+            compressed_var = np.sum(np.square(S_k))
+            recovered_var = compressed_var / original_var
+            return recovered_var
+        else:
+            r = ImgCompression.recovered_variance_proportion(self, S[:, 0], k)
+            g = ImgCompression.recovered_variance_proportion(self, S[:, 1], k)
+            b = ImgCompression.recovered_variance_proportion(self, S[:, 2], k)
+            recovered_var = np.array([r, g, b])
+            return recovered_var

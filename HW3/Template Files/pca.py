@@ -36,11 +36,13 @@ class PCA(object):
         Return:
             X_new: N*K array corresponding to data obtained by applying PCA on data
         """
-        raise NotImplementedError
+        V = self.V.transpose()
+        X_new = np.dot(data, V)
+        return X_new[:, :K]
 
     def transform_rv(self, data, retained_variance=0.99):
         """
-        Transform data to reduce the number of features such that a given variance is retained
+        Transform data to reduce the number of features such that a given variance is tetained
 
         Utilize self.U, self.S and self.V that were set in fit() method.
 
@@ -50,8 +52,20 @@ class PCA(object):
         Return:
             X_new: N*K array corresponding to data obtained by applying PCA on data
         """
+        S = np.square(self.S)
+        cum_variance = np.cumsum(S) / np.sum(S)
+        i = 0
+        K = 0
+        bool = True
+        while bool:
+            if cum_variance[i] >= retained_variance:
+                bool = False
+                K = i
+            i += 1
+        V = self.V.transpose()
+        X_new = np.dot(data, V)
+        return X_new[:, :K+1]
 
-        raise NotImplementedError
 
     def get_V(self):
         """ Getter function for value of V """

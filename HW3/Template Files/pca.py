@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class PCA(object):
 
     def __init__(self):
@@ -21,7 +20,9 @@ class PCA(object):
         Return:
             None
         """
-        raise NotImplementedError
+        m = np.mean(X, axis=0)
+        x = X - m
+        self.U, self.S, self.V = np.linalg.svd(x, full_matrices=False)
 
     def transform(self, data, K=2):
         """

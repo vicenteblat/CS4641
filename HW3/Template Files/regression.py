@@ -15,7 +15,11 @@ class Regression(object):
         Return:
             a float value
         '''
-        raise NotImplementedError
+        dist = label - pred
+        square_dist = np.square(dist)
+        mse = np.mean(square_dist)
+        rmse = np.sqrt(mse)
+        return rmse
 
     def construct_polynomial_feats(self, x, degree):  # [5pts]
         """
@@ -30,7 +34,11 @@ class Regression(object):
              ......
             ]
         """
-        raise NotImplementedError
+        column = np.reshape(x, (x.shape[0], 1))
+        X = np.tile(column, degree + 1)
+        powers = np.array(range(degree + 1))
+        feat = np.power(X, powers)
+        return feat
 
     def predict(self, xtest, weight):  # [5pts]
         """

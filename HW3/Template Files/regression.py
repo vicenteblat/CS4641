@@ -50,7 +50,9 @@ class Regression(object):
         Return:
             prediction: Nx1 numpy array, the predicted labels
         """
-        raise NotImplementedError
+        prediction = np.dot(xtest, weight)
+        return prediction
+
 
     # =================
     # LINEAR REGRESSION

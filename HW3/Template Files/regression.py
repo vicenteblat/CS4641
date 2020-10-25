@@ -138,4 +138,32 @@ class Regression(object):
         raise NotImplementedError
 
     def ridge_cross_validation(self, X, y, kfold=10, c_lambda=100):  # [8 pts]
-        raise NotImplementedError
+        """
+        Args:
+            X : NxD numpy array, where N is the number of instances and D is the dimensionality of each instance
+            y : Nx1 numpy array, true labels
+            kfold: Number of folds you should take while implementing cross validation.
+            c_lambda: Value of regularization constant
+        Returns:
+            meanErrors: Float average rmse error
+        Hint: np.concatenate might be helpful.
+        Look at 3.5 to see how this function is being used.
+        # For cross validation, use 10-fold method and only use it for your training data (you already have the train_indices to get training data).
+        # For the training data, split them in 10 folds which means that use 10 percent of training data for test and 90 percent for training.
+        """
+        rmseArr = []
+        N = X.shape[0]
+        subset_size = int(N / kfold)
+        j = 0
+        for i in range(kfold):
+            if j + subset_size >= N:
+                x = X[j:, :]
+            else:
+                x = X[j:j + subset_size - 1, :]
+            weight = Regression.ridge_fit_closed(self, X, y, c_lambda)
+            pred = np.dot(X, weight)
+            rmse = Regression.rmse(self, pred, y)
+            rmseArr.append(rmse)
+            j = j + subset_size
+        meanErrors = np.mean(rmseArr)
+        return meanErrors

@@ -68,7 +68,10 @@ class Regression(object):
         Return:
             weight: Dx1 numpy array, the weights of linear regression model
         """
-        raise NotImplementedError
+        X_transpose = np.transpose(xtrain)
+        pseudo_inverse = np.dot(np.linalg.inv(np.dot(X_transpose, xtrain)), X_transpose)
+        weight = np.dot(pseudo_inverse, ytrain)
+        return weight
 
     def linear_fit_GD(self, xtrain, ytrain, epochs=5, learning_rate=0.001):  # [5pts]
         """
@@ -106,7 +109,8 @@ class Regression(object):
         Return:
             weight: Dx1 numpy array, the weights of ridge regression model
         """
-        raise NotImplementedError
+        weight = Regression.linear_fit_closed(self, xtrain * c_lambda, ytrain)
+        return weight
 
     def ridge_fit_GD(self, xtrain, ytrain, c_lambda, epochs=500, learning_rate=1e-7):  # [5pts]
         """

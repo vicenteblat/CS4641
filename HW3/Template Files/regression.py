@@ -68,8 +68,7 @@ class Regression(object):
         Return:
             weight: Dx1 numpy array, the weights of linear regression model
         """
-        X_transpose = np.transpose(xtrain)
-        pseudo_inverse = np.dot(np.linalg.inv(np.dot(X_transpose, xtrain)), X_transpose)
+        pseudo_inverse = np.linalg.pinv(xtrain)
         weight = np.dot(pseudo_inverse, ytrain)
         return weight
 

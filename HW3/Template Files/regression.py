@@ -159,19 +159,26 @@ class Regression(object):
         # For cross validation, use 10-fold method and only use it for your training data (you already have the train_indices to get training data).
         # For the training data, split them in 10 folds which means that use 10 percent of training data for test and 90 percent for training.
         """
+        y = y.flatten()
         rmseArr = []
         N = X.shape[0]
-        subset_size = int(N / kfold)
+        subset_size = round(N / kfold)
         j = 0
         for i in range(kfold):
             if j + subset_size >= N:
-                x = X[j:, :]
+                x_test = X[j:, :]
+                x_train = np.delete(X, np.s_[j:], axis=0)
+                y_test = y[j:]
+                y_train = np.delete(y, np.s_[j:])
             else:
-                x = X[j:j + subset_size - 1, :]
-            weight = Regression.ridge_fit_closed(self, X, y, c_lambda)
-            pred = np.dot(X, weight)
-            rmse = Regression.rmse(self, pred, y)
+                x_test = X[j:j + subset_size, :]
+                x_train = np.delete(X, np.s_[j:j + subset_size], axis=0)
+                y_test = y[j:j + subset_size]
+                y_train = np.delete(y, np.s_[j:j + subset_size])
+            weight = Regression.ridge_fit_closed(self, x_train, y_train, c_lambda)
+            prediction = Regression.predict(self, x_test, weight)
+            rmse = Regression.rmse(self, prediction, y_test)
             rmseArr.append(rmse)
-            j = j + subset_size
-        meanErrors = np.mean(rmseArr)
-        return meanErrors
+            j += subset_size
+        meanError = np.mean(rmseArr)
+        return meanError

@@ -108,7 +108,16 @@ class Regression(object):
         Return:
             weight: Dx1 numpy array, the weights of ridge regression model
         """
-        weight = Regression.linear_fit_closed(self, xtrain * c_lambda, ytrain)
+        z = xtrain
+        z_T = z.transpose()
+        I = np.zeros((xtrain.shape[1], xtrain.shape[1]))
+        np.fill_diagonal(I, c_lambda)
+        I[0, 0] = 0
+        new_z = np.dot(z_T, z)
+        tobeinv = new_z + I
+        inv = np.linalg.inv(tobeinv)
+        pseudo = np.dot(inv, z_T)
+        weight = np.dot(pseudo, ytrain)
         return weight
 
     def ridge_fit_GD(self, xtrain, ytrain, c_lambda, epochs=500, learning_rate=1e-7):  # [5pts]

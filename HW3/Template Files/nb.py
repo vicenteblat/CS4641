@@ -48,7 +48,18 @@ class NaiveBayes(object):
         Return:
             fratio: 1 x D vector of the likelihood ratio of different words (Hamilton/Madison)
         '''
-        raise NotImplementedError
+        XH += 1
+        H_words = np.sum(XH, axis=0)
+        H_total = np.sum(H_words)
+        H_likelihood = H_words / H_total
+
+        XM += 1
+        M_words = np.sum(XM, axis=0)
+        M_total = np.sum(M_words)
+        M_likelihood = M_words / M_total
+
+        fratio = H_likelihood / M_likelihood
+        return fratio
 
     def _priors_ratio(self, XH, XM):  # [5pts]
         '''
@@ -60,7 +71,12 @@ class NaiveBayes(object):
         Return:
             pr: prior ratio of (Hamilton/Madison)
         '''
-        raise NotImplementedError
+        H_words = np.sum(XH, axis=0)
+        H_total = np.sum(H_words)
+        M_words = np.sum(XM, axis=0)
+        M_total = np.sum(M_words)
+        pr = H_total / M_total
+        return pr
 
     def classify_disputed(self, fratio, pratio, XD):  # [5pts]
         '''
@@ -69,7 +85,15 @@ class NaiveBayes(object):
             pratio: 1 x 1 number
             XD: 12 x D bag of words representation of the 12 disputed documents (D = 1307 which are the number of features for each document)
         Return:
-             1 x 12 list, each entry is H to indicate Hamilton or M to indicate Madison for the corrsponding document
+             1 x 12 list, each entry is H to indicate Hamilton or M to indicate Madison for the corresponding document
         '''
-
-        raise NotImplementedError
+        XD += 1
+        classification = []
+        for i in range(XD.shape[0]):
+            disputed_words = XD[i, :]
+            posterior_ratio = pratio * np.prod(fratio * disputed_words)
+            if posterior_ratio >= 1:
+                classification.append('H')
+            else:
+                classification.append('M')
+        return classification

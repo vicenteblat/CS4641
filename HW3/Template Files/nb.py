@@ -20,9 +20,9 @@ class NaiveBayes(object):
         nM = len(papersM)
         nD = len(papersD)
 
-        '''To ignore certain common words in English that might skew your model, we add them to the stop words 
-        list below. You may want to experiment by choosing your own list of stop words, but be sure to keep 
-        'HAMILTON' and 'MADISON' in this list at a minimum, as their names appear in the text of the papers 
+        '''To ignore certain common words in English that might skew your model, we add them to the stop words
+        list below. You may want to experiment by choosing your own list of stop words, but be sure to keep
+        'HAMILTON' and 'MADISON' in this list at a minimum, as their names appear in the text of the papers
         and leaving them in could lead to unpredictable results '''
 
         stop_words = text.ENGLISH_STOP_WORDS.union({'HAMILTON', 'MADISON'})
@@ -31,7 +31,7 @@ class NaiveBayes(object):
         vectorizer = text.CountVectorizer(stop_words=stop_words, min_df=10)
         X = vectorizer.fit_transform(papersH + papersM + papersD).toarray()
 
-        '''To visualize the full list of words remaining after filtering out stop words and words used less 
+        '''To visualize the full list of words remaining after filtering out stop words and words used less
         than min_df times uncomment the following line'''
         # print(vectorizer.vocabulary_)
 
@@ -48,13 +48,13 @@ class NaiveBayes(object):
         Return:
             fratio: 1 x D vector of the likelihood ratio of different words (Hamilton/Madison)
         '''
-        XH += 1
         H_words = np.sum(XH, axis=0)
+        H_words += 1
         H_total = np.sum(H_words)
         H_likelihood = H_words / H_total
 
-        XM += 1
         M_words = np.sum(XM, axis=0)
+        M_words += 1
         M_total = np.sum(M_words)
         M_likelihood = M_words / M_total
 
@@ -87,12 +87,12 @@ class NaiveBayes(object):
         Return:
              1 x 12 list, each entry is H to indicate Hamilton or M to indicate Madison for the corresponding document
         '''
-        XD += 1
+
         classification = []
         for i in range(XD.shape[0]):
             disputed_words = XD[i, :]
-            posterior_ratio = pratio * np.prod(fratio * disputed_words)
-            if posterior_ratio >= 1:
+            posterior_ratio = pratio * np.prod(fratio ** disputed_words)
+            if posterior_ratio > 0.5:
                 classification.append('H')
             else:
                 classification.append('M')

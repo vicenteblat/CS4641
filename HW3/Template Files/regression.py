@@ -85,8 +85,8 @@ class Regression(object):
         weight = np.zeros((xtrain.shape[1], 1))
         for i in range(epochs):
             dif = ytrain - np.dot(xtrain, weight)
-            sum = np.dot(xtrain.transpose(), dif)
-            weight = weight + ((learning_rate / xtrain.shape[0]) * sum)
+            Sum = np.dot(xtrain.transpose(), dif)
+            weight = weight + ((learning_rate / xtrain.shape[0]) * Sum)
         return weight
 
 
@@ -100,7 +100,17 @@ class Regression(object):
         Return:
             weight: Dx1 numpy array, the weights of linear regression model
         """
-        raise NotImplementedError
+        weight = np.zeros((xtrain.shape[1], 1))
+        for i in range(epochs):
+            n = np.random.randint(0, xtrain.shape[0])
+            x = xtrain[n, :]
+            y = ytrain[n][0]
+            dif = y - np.dot(x, weight)
+            dif = dif[0]
+            second = learning_rate * x.transpose() * dif
+            weight = weight + second
+        return weight
+
 
     # =================
     # RIDGE REGRESSION

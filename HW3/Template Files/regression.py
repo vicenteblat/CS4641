@@ -168,6 +168,7 @@ class Regression(object):
         for i in range(epochs):
             n = np.random.randint(0, xtrain.shape[0])
             x = xtrain[n, :]
+            x = np.reshape(x, (1, xtrain.shape[1]))
             y = ytrain[n][0]
             dif = y - np.dot(x, weight)
             dif = dif[0]

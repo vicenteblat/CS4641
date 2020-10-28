@@ -82,7 +82,13 @@ class Regression(object):
         Return:
             weight: Dx1 numpy array, the weights of linear regression model
         """
-        raise NotImplementedError
+        weight = np.zeros((xtrain.shape[1], 1))
+        for i in range(epochs):
+            dif = ytrain - np.dot(xtrain, weight)
+            sum = np.dot(xtrain.transpose(), dif)
+            weight = weight + ((learning_rate / xtrain.shape[0]) * sum)
+        return weight
+
 
     def linear_fit_SGD(self, xtrain, ytrain, epochs=100, learning_rate=0.001):  # [5pts]
         """

@@ -164,7 +164,17 @@ class Regression(object):
         Return:
             weight: Dx1 numpy array, the weights of linear regression model
         """
-        raise NotImplementedError
+        weight = np.zeros((xtrain.shape[1], 1))
+        for i in range(epochs):
+            n = np.random.randint(0, xtrain.shape[0])
+            x = xtrain[n, :]
+            y = ytrain[n][0]
+            dif = y - np.dot(x, weight)
+            dif = dif[0]
+            second = learning_rate * (x.transpose() * dif + c_lambda * weight)
+            weight = weight + second
+        return weight
+
 
     def ridge_cross_validation(self, X, y, kfold=10, c_lambda=100):  # [8 pts]
         """

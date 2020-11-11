@@ -67,10 +67,9 @@ class dlnet:
         Input: u of any dimension
         return: Relu(u) 
         '''
-        #TODO: implement this 
-        
-        raise NotImplementedError
-
+        relu = np.vectorize(lambda x: max(0, x))
+        new_u = relu(u)
+        return new_u
 
     def Sigmoid(self, u): 
         '''

@@ -142,22 +142,19 @@ class dlnet:
     def forward(self, x):
         '''
         Fill in the missing code lines, please refer to the description for more details.
-        Check nInit method and use variables from there as well as other implemeted methods.
+        Check nInit method and use variables from there as well as other implemented methods.
         Refer to the description above and implement the appropriate mathematical equations.
         do not change the lines followed by #keep. 
-        '''  
-       
-          #Todo: uncomment the following 7 lines and complete the missing code
-#         self.ch['X'] = x #keep
-#         u1 = 
-#         o1 =    
-#         self.ch['u1'], self.ch['o1']=u1, o1 #keep 
-#         u2 =     
-#         o2 = 
-#         self.ch['u2'], self.ch['o2']=u2, o2 #keep
-            
+        '''
+        self.ch['X'] = x #keep
+        u1 = np.dot(self.param['theta1'], self.ch['X']) + self.param['b1']
+        o1 = self.Relu(u1)
+        self.ch['u1'], self.ch['o1'] = u1, o1 #keep
+        u2 = np.dot(self.param['theta2'], self.ch['o1']) + self.param['b2']
+        o2 = self.Sigmoid(u2)
+        self.ch['u2'], self.ch['o2'] = u2, o2 #keep
         return o2 #keep
-    
+
 
     def backward(self, y, yh):
         '''

@@ -78,9 +78,9 @@ class dlnet:
         Input: u of any dimension
         return: Sigmoid(u) 
         '''
-        #TODO: implement this 
-        
-        raise NotImplementedError
+        sigmoid = np.vectorize(lambda x: 1 / (1 + np.exp(-x)))
+        new_u = sigmoid(u)
+        return new_u
 
 
     def Tanh(self, u):

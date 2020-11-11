@@ -68,8 +68,8 @@ class dlnet:
         return: Relu(u) 
         '''
         relu = np.vectorize(lambda x: max(0, x))
-        new_u = relu(u)
-        return new_u
+        o = relu(u)
+        return o
 
     def Sigmoid(self, u): 
         '''
@@ -79,8 +79,8 @@ class dlnet:
         return: Sigmoid(u) 
         '''
         sigmoid = np.vectorize(lambda x: 1 / (1 + np.exp(-x)))
-        new_u = sigmoid(u)
-        return new_u
+        o = sigmoid(u)
+        return o
 
 
     def Tanh(self, u):
@@ -90,9 +90,9 @@ class dlnet:
         Input: u of any dimension
         return: Tanh(u) 
         '''
-        #TODO: implement this 
-        
-        raise NotImplementedError
+        tanh = np.vectorize(lambda x: (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x)))
+        o = tanh(u)
+        return o
     
     
     def dRelu(self, u):

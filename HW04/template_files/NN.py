@@ -159,39 +159,55 @@ class dlnet:
     def backward(self, y, yh):
         '''
         Fill in the missing code lines, please refer to the description for more details
-        You will need to use cache variables, some of the implemeted methods, and other variables as well
+        You will need to use cache variables, some of the implemented methods, and other variables as well
         Refer to the description above and implement the appropriate mathematical equations.
         do not change the lines followed by #keep.  
-        '''    
-        #TODO: implement this 
-            
-        dLoss_o2 = - (np.divide(y, yh ) - np.divide(1 - y, 1 - yh))   # partial l by partial o2  
-            
-        #Implement equations for getting derivative of loss w.r.t u2, theta2 and b2
-        # set dLoss_u2, dLoss_theta2, dLoss_b2 
-        
-        
-        dLoss_o1 = np.dot(self.param["theta2"].T,dLoss_u2) # partial l by partial o1
-       
-        
-        #Implement equations for getting derivative of loss w.r.t u1, theta1 and b1
+        '''
+        dLoss_o2 = - (np.divide(y, yh) - np.divide(1 - y, 1 - yh)) / y.shape[1]  # partial l by partial o2
+
+        # Implement equations for getting derivative of loss w.r.t u2, theta2 and b2
+        dLoss_u2 = dLoss_o2 * self.ch['o2'] * (1 - self.ch['o2'])  # partial l by partial u2
+        dLoss_theta2 = np.dot(dLoss_u2, self.ch['o1'].T)  # partial l by partial theta2
+        dLoss_b2 = np.dot(dLoss_u2, np.ones((dLoss_u2.shape[1], 1)))  # partial l by partial b2
+
+        # set dLoss_u2, dLoss_theta2, dLoss_b2
+        self.ch['dLoss_u2'] = dLoss_u2
+        self.ch['dLoss_theta2'] = dLoss_theta2
+        self.ch['dLoss_b2'] = dLoss_b2
+
+        dLoss_o1 = np.dot(self.param["theta2"].T, dLoss_u2)  # partial l by partial o1
+
+        # Implement equations for getting derivative of loss w.r.t u1, theta1 and b1
+        f = np.vectorize(lambda x: 0 if x <= 0 else 1)
+        do1_u1 = f(self.ch['u1'])
+        dLoss_u1 = np.multiply(dLoss_o1, do1_u1)  # partial l by partial u1
+        dLoss_theta1 = np.dot(dLoss_u1, self.X.T) # partial l by partial theta1
+        dLoss_b1 = np.dot(dLoss_u1, np.ones((dLoss_u1.shape[1], 1)))  # partial l by partial b1
+
         # set dLoss_u1, dLoss_theta1, dLoss_b1
-            
-            
-        #parameters update, no need to change these lines
-        self.param["theta2"] = self.param["theta2"] - self.lr * dLoss_theta2 #keep
-        self.param["b2"] = self.param["b2"] - self.lr * dLoss_b2 #keep
-        self.param["theta1"] = self.param["theta1"] - self.lr * dLoss_theta1 #keep
-        self.param["b1"] = self.param["b1"] - self.lr * dLoss_b1 #keep
+        self.ch['dLoss_u1'] = dLoss_u1
+        self.ch['dLoss_theta1'] = dLoss_theta1
+        self.ch['dLoss_b1'] = dLoss_b1
+
+        # parameters update, no need to change these lines
+        self.param["theta2"] = self.param["theta2"] - self.lr * dLoss_theta2  # keep
+        self.param["b2"] = self.param["b2"] - self.lr * dLoss_b2  # keep
+        self.param["theta1"] = self.param["theta1"] - self.lr * dLoss_theta1  # keep
+        self.param["b1"] = self.param["b1"] - self.lr * dLoss_b1  # keep
         return dLoss_theta2, dLoss_b2, dLoss_theta1, dLoss_b1
 
 
     def gradient_descent(self, x, y, iter = 60000):
         '''
         This function is an implementation of the gradient decent algorithm 
-        '''    
-        #Todo: implement this 
-        raise NotImplementedError
+        '''
+        for i in range(iter):
+            yh = self.forward(x)
+            self.loss.append(self.nloss(y, yh))
+            if i % 2000 == 0:
+                loss = self.loss[-1]
+                print('Loss after iteration %d: %d', i, loss)
+            _, _, _, _ = self.backward(y, yh)
     
     #bonus for undergraduate students 
     def stochastic_gradient_descent(self, x, y, iter = 60000):

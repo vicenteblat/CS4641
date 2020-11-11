@@ -207,7 +207,7 @@ class dlnet:
             self.loss.append(self.nloss(y, yh))
             if i % 2000 == 0:
                 loss = self.loss[-1]
-                print('Loss after iteration %d: %d', i, loss)
+                print('Loss after iteration %d: %d' % (i, loss))
             _, _, _, _ = self.backward(y, yh)
     
     #bonus for undergraduate students 

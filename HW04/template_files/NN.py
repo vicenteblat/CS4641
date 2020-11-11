@@ -201,6 +201,7 @@ class dlnet:
         '''
         This function is an implementation of the gradient decent algorithm 
         '''
+        self.nInit()
         for i in range(iter):
             yh = self.forward(x)
             self.loss.append(self.nloss(y, yh))

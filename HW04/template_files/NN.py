@@ -122,7 +122,6 @@ class dlnet:
         Input: u of any dimension
         return: dTanh(u) 
         '''
-        
         o = np.tanh(u)
         return 1-o**2
     
@@ -136,10 +135,8 @@ class dlnet:
 
         return: CE 1x1: loss value 
         '''
-        
-        #TODO: implement this 
-        
-        raise NotImplementedError
+        CE = np.sum(-1 * (np.multiply(y, np.log(yh)) + np.multiply((1 - y), np.log(1 - yh))) / y.shape[1])
+        return CE
 
 
     def forward(self, x):

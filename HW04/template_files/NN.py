@@ -135,7 +135,7 @@ class dlnet:
 
         return: CE 1x1: loss value 
         '''
-        CE = np.mean(-1 * (np.multiply(y, np.log(yh)) + np.multiply((1 - y), np.log(1 - yh))))
+        CE = -1 * np.mean((np.multiply(y, np.log(yh)) + np.multiply((1 - y), np.log(1 - yh))))
         return CE
 
 

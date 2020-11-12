@@ -178,8 +178,7 @@ class dlnet:
         dLoss_o1 = np.matmul(self.param["theta2"].T, dLoss_u2)  # partial l by partial o1
 
         # Implement equations for getting derivative of loss w.r.t u1, theta1 and b1
-        f = np.vectorize(lambda x: 0 if x <= 0 else 1)
-        do1_u1 = f(self.ch['u1'])
+        do1_u1 = self.dRelu(self.ch['u1'])
         dLoss_u1 = np.multiply(dLoss_o1, do1_u1)  # partial l by partial u1
         dLoss_theta1 = np.matmul(dLoss_u1, self.ch['X'].T)  # partial l by partial theta1
         dLoss_b1 = np.matmul(dLoss_u1, np.ones((dLoss_u1.shape[1], 1)))  # partial l by partial b1

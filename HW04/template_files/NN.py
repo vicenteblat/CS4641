@@ -135,7 +135,7 @@ class dlnet:
 
         return: CE 1x1: loss value 
         '''
-        CE = np.sum(-1 * (np.multiply(y, np.log(yh)) + np.multiply((1 - y), np.log(1 - yh))) / y.shape[1])
+        CE = np.mean(-1 * (np.multiply(y, np.log(yh)) + np.multiply((1 - y), np.log(1 - yh))))
         return CE
 
 
@@ -166,23 +166,23 @@ class dlnet:
         dLoss_o2 = - (np.divide(y, yh) - np.divide(1 - y, 1 - yh)) / y.shape[1]  # partial l by partial o2
 
         # Implement equations for getting derivative of loss w.r.t u2, theta2 and b2
-        dLoss_u2 = dLoss_o2 * self.ch['o2'] * (1 - self.ch['o2'])  # partial l by partial u2
-        dLoss_theta2 = np.dot(dLoss_u2, self.ch['o1'].T)  # partial l by partial theta2
-        dLoss_b2 = np.dot(dLoss_u2, np.ones((dLoss_u2.shape[1], 1)))  # partial l by partial b2
+        dLoss_u2 = np.multiply(dLoss_o2, np.multiply(self.ch['o2'], (1 - self.ch['o2'])))  # partial l by partial u2
+        dLoss_theta2 = np.matmul(dLoss_u2, self.ch['o1'].T)  # partial l by partial theta2
+        dLoss_b2 = np.matmul(dLoss_u2, np.ones((dLoss_u2.shape[1], 1)))  # partial l by partial b2
 
         # set dLoss_u2, dLoss_theta2, dLoss_b2
         self.ch['dLoss_u2'] = dLoss_u2
         self.ch['dLoss_theta2'] = dLoss_theta2
         self.ch['dLoss_b2'] = dLoss_b2
 
-        dLoss_o1 = np.dot(self.param["theta2"].T, dLoss_u2)  # partial l by partial o1
+        dLoss_o1 = np.matmul(self.param["theta2"].T, dLoss_u2)  # partial l by partial o1
 
         # Implement equations for getting derivative of loss w.r.t u1, theta1 and b1
         f = np.vectorize(lambda x: 0 if x <= 0 else 1)
         do1_u1 = f(self.ch['u1'])
         dLoss_u1 = np.multiply(dLoss_o1, do1_u1)  # partial l by partial u1
-        dLoss_theta1 = np.dot(dLoss_u1, self.X.T) # partial l by partial theta1
-        dLoss_b1 = np.dot(dLoss_u1, np.ones((dLoss_u1.shape[1], 1)))  # partial l by partial b1
+        dLoss_theta1 = np.matmul(dLoss_u1, self.ch['X'].T)  # partial l by partial theta1
+        dLoss_b1 = np.matmul(dLoss_u1, np.ones((dLoss_u1.shape[1], 1)))  # partial l by partial b1
 
         # set dLoss_u1, dLoss_theta1, dLoss_b1
         self.ch['dLoss_u1'] = dLoss_u1
@@ -204,12 +204,13 @@ class dlnet:
         self.nInit()
         for i in range(iter):
             yh = self.forward(x)
-            self.loss.append(self.nloss(y, yh))
             if i % 2000 == 0:
-                loss = self.loss[-1]
-                print('Loss after iteration %d: %d' % (i, loss))
+                loss = self.nloss(y, yh)
+                self.loss.append(loss)
+                print('Loss after iteration %d: %6f' % (i, loss))
             _, _, _, _ = self.backward(y, yh)
-    
+
+
     #bonus for undergraduate students 
     def stochastic_gradient_descent(self, x, y, iter = 60000):
         '''
@@ -224,10 +225,19 @@ class dlnet:
            gradients learnt
         5. You can use SGD with any neural net type 
         '''
-        
-        #Todo: implement this 
-        raise NotImplementedError
-                        
+        self.nInit()
+        for i in range(iter):
+            idx = i % x.shape[1]
+            xs = np.expand_dims(x[:, idx], axis=1)
+            ys = np.expand_dims(y[:, idx], axis=1)
+            yh = self.forward(xs)
+            if i % 2000 == 0:
+                loss = self.nloss(ys, yh)
+                self.loss.append(loss)
+                print('Loss after iteration %d: %6f' % (i, loss))
+            _, _, _, _ = self.backward(ys, yh)
+
+
     def predict(self, x): 
         '''
         This function predicts new data points

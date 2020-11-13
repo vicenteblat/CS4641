@@ -77,10 +77,15 @@ class RandomForest(object):
         Returns:
         - None
         """
-        raise NotImplementedError
-        
-        
-    
+        self.bootstrapping(X.shape[0], X.shape[1])
+        i = 0
+        for decision_tree in self.decision_trees:
+            xs = np.take(np.take(X, self.bootstraps_row_indices[i], axis=0), self.feature_indices[i], axis=1)
+            ys = np.take(y, self.bootstraps_row_indices[i], axis=0)
+            decision_tree.fit(xs, ys)
+            i += 1
+
+
     def OOB_score(self, X, y):
         # helper function. You don't have to modify it
         # This function computes the accuracy of the random forest model predicting y given x.

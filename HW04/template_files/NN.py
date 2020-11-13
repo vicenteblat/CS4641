@@ -164,8 +164,7 @@ class dlnet:
         do not change the lines followed by #keep.  
         '''
         dLoss_o2 = - (np.divide(y, yh) - np.divide(1 - y, 1 - yh)) / y.shape[1]  # partial l by partial o2
-        print(y.shape)
-        print(dLoss_o2.shape)
+
         # Implement equations for getting derivative of loss w.r.t u2, theta2 and b2
         dLoss_u2 = np.multiply(dLoss_o2, np.multiply(self.ch['o2'], (1 - self.ch['o2'])))  # partial l by partial u2
         dLoss_theta2 = np.matmul(dLoss_u2, self.ch['o1'].T)  # partial l by partial theta2

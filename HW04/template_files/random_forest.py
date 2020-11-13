@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import sklearn
 from sklearn.tree import DecisionTreeClassifier
 
@@ -12,11 +13,11 @@ class RandomForest(object):
         self.bootstraps_row_indices = []
         self.feature_indices = []
         self.out_of_bag = []
-        self.decision_trees = [sklearn.tree.DecisionTreeClassifier(max_depth=max_depth, criterion='entropy') for i in range(n_estimators)]
+        self.decision_trees = [DecisionTreeClassifier(max_depth=max_depth, criterion='entropy') for i in range(n_estimators)]
         
     def _bootstrapping(self, num_training, num_features, random_seed = None):
         """
-        TODO: 
+        TODO:
         - Randomly select indices of size num_training with replacement corresponding to row locations of 
           selected samples in the original dataset.
         - Randomly select indices without replacement corresponding the column locations of selected features in the original feature
@@ -35,13 +36,14 @@ class RandomForest(object):
                     
         Hint: Consider using np.random.choice.
         """
-        row_idx = np.random.randint(0, num_training, num_training)
-        col_idx = np.random.randint(0, num_features, num_features)
+        np.random.seed(seed=random_seed)
+        row_idx = np.random.choice(num_training, num_training, replace=True)
+        col_idx = list(np.random.choice(num_features, math.floor(num_features * self.max_features), replace=False))
         return row_idx, col_idx
 
 
     def bootstrapping(self, num_training, num_features):
-         """
+        """
         Args: 
         - num_training: an integer N representing the total number of training instances.
         - num_features: an integer D representing the total number of features.
@@ -50,7 +52,7 @@ class RandomForest(object):
         - None
         """
         # helper function. You don't have to modify it
-        # Initializing the bootstap datasets for each tree
+        # Initializing the bootstrap datasets for each tree
         for i in range(self.n_estimators):
             total = set(list(range(num_training)))
             row_idx, col_idx = self._bootstrapping(num_training, num_features)
@@ -58,6 +60,7 @@ class RandomForest(object):
             self.bootstraps_row_indices.append(row_idx)
             self.feature_indices.append(col_idx)
             self.out_of_bag.append(total)
+
 
     def fit(self, X, y):
         """

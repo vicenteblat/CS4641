@@ -20,7 +20,7 @@ class RandomForest(object):
         - Randomly select indices of size num_training with replacement corresponding to row locations of 
           selected samples in the original dataset.
         - Randomly select indices without replacement corresponding the column locations of selected features in the original feature
-           list (num_features denotes the total number of features in the training set, max_features denotes the percentage 
+           list (num_features denotes the total number of features in the training set, max_features denotes the percentage
            of features that are used to fit each decision tree).
         
         Reference: https://en.wikipedia.org/wiki/Bootstrapping_(statistics)
@@ -35,9 +35,11 @@ class RandomForest(object):
                     
         Hint: Consider using np.random.choice.
         """
-        
-        raise NotImplementedError
-            
+        row_idx = np.random.randint(0, num_training, num_training)
+        col_idx = np.random.randint(0, num_features, num_features)
+        return row_idx, col_idx
+
+
     def bootstrapping(self, num_training, num_features):
          """
         Args: 

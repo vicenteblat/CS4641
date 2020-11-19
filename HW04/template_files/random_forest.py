@@ -4,7 +4,7 @@ import sklearn
 from sklearn.tree import DecisionTreeClassifier
 
 class RandomForest(object):
-    def __init__(self, n_estimators=50, max_depth=None, max_features=0.7):
+    def __init__(self, n_estimators=12, max_depth=12, max_features=0.9):
         # helper function. You don't have to modify it
         # Initialization done here
         self.n_estimators = n_estimators

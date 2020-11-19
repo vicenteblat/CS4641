@@ -43,7 +43,7 @@ class dlnet:
         self.lr = lr  # learning rate
         self.sam = self.Y.shape[1]  # number of training samples we have
         self._estimator_type = 'classifier'
-        self.neural_net_type = "Tanh -> Sigmoid"  # can change it to "Tanh -> Sigmoid"
+        self.neural_net_type = "Relu -> Sigmoid"  # can change it to "Tanh -> Sigmoid"
 
     def nInit(self):
         '''
